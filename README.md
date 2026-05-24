@@ -4,12 +4,71 @@ Spring Boot 3 + JWT + role-based security + MySQL backend, with a Vite React fro
 
 ## Prerequisites
 
+**Local development**
+
 - Java 17+
 - Maven 3.8+
 - MySQL 8+
 - Node.js 18+
 
-## Database setup
+**Docker (alternative)**
+
+- Docker Desktop or Docker Engine
+- Docker Compose v2
+
+## Docker (recommended for quick start)
+
+Run the full stack (MySQL + Spring Boot + React UI) with one command. No local Java, Maven, or Node required.
+
+### 1. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` if you want to change the MySQL root password or JWT secret (optional for local use).
+
+### 2. Start all services
+
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+Wait until the backend logs show `Started DoctorPatientJwtApplication`.
+
+| Service  | URL                      |
+|----------|--------------------------|
+| Web UI   | http://localhost         |
+| REST API | http://localhost:8080    |
+| MySQL    | localhost:3306 (optional)|
+
+The UI is served by Nginx and proxies `/api` to the backend. Login with the seed users below.
+
+### 3. Stop services
+
+```bash
+docker compose down
+```
+
+To remove the database volume as well (fresh DB on next start):
+
+```bash
+docker compose down -v
+```
+
+### Docker architecture
+
+- **mysql** — database `doctor_patient_db` (auto-created)
+- **backend** — Spring Boot on port 8080
+- **frontend** — production React build + Nginx on port 80
+
+---
+
+## Local development
+
+### Database setup
 
 ```sql
 CREATE DATABASE doctor_patient_db;
@@ -74,7 +133,15 @@ Protected routes require header: `Authorization: Bearer <jwt>`.
 
 ## Build for production
 
+**Without Docker**
+
 ```bash
 mvn package -DskipTests
 cd frontend && npm run build
+```
+
+**With Docker**
+
+```bash
+docker compose up --build -d
 ```
